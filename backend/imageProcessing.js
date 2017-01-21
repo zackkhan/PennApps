@@ -8,6 +8,8 @@ let visionClient = vision({
   keyFilename: jsonPath
 });
 
+var images = ['../Image%20Recognition/Objects/trash_can.JPG']
+
 function getDetections(image){
 
     return new Promise( (resolve, reject) => {
