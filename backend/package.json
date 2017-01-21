@@ -10,6 +10,9 @@
   "author": "Michael Anderjaska",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/vision": "^0.7.1",
+    "bluebird": "^3.4.7",
+    "body-parser": "^1.16.0",
     "express": "^4.14.0",
     "socket.io": "^1.7.2"
   }

@@ -1,3 +1,4 @@
+'use strict';
 
 //express
 var app = require('express')();
@@ -11,13 +12,16 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
-var port = process.env.PORT || 3000;
+
+const port = 3000;
 
 io.on('connection',  (socket) => {
   //io.emit('this', { will: 'be received by everyone'});
 
-  socket.on('receiving images', (args) => {
-    //do some stuff
+  socket.on('send-image', (image) => {
+    console.log('image received');
+    console.log(image.hello);
+    //do stuff with image
   });
 
   socket.on('disconnect', function () {
@@ -26,6 +30,12 @@ io.on('connection',  (socket) => {
 });
 
 
+app.get('/test', function(request, response) {
+  console.log('test request received');
+  response.send('test complete');
+});
+
+
 app.listen(port, () => {
-  console.log('App is online');
+  console.log('App is online on ' + port);
 });
