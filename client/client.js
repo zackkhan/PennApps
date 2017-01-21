@@ -3,8 +3,10 @@ var app = express();
 var request = require('request');
 var bodyParser = require("body-parser");
 var io = require('socket.io-client');
+//const url = 'http://penn-apps.herokuapp.com'
+const url = 'http://localhost:5000'
 //var socket = io('penn-apps.herokuapp.com:51356');
-var socket = null;
+var socket = io(url);
 
 //file stuff
 var base64 = require('node-base64-image');
@@ -14,24 +16,27 @@ var fs = require('fs')
 var spawn = require('child_process').spawn;
 var proc;
 
-app.use(bodyParser.json({
-	limit : config.bodyLimit
-}));
+app.use(bodyParser.json());
 
 var path = __dirname + '/image.jpg';
 options = {string: true, local: true};
 
 
-request('http://penn-apps.herokuapp.com/getPort',  (error, response, body) => {
+
+/*
+request(url + '/getPort',  (error, response, body) => {
   if (!error && response.statusCode == 200) {
-    socket = io('http://penn-apps.herokuapp.com:' + body.port);
-    console.log('client connected to port ' + body.port) // Show the HTML for the Google homepage.
+    var body = JSON.parse(body);
+    console.log(body);
+    socket = io(url + ':' + body.port);
+    console.log('client connected to port ' + body.port )
 
   }
 })
 
-//while(socket == null){};
-/*
+*/
+//TODO: need to get port before initialize sockets
+
 socket.on('connect', function(){
     console.log('connected!')
 });
@@ -46,7 +51,7 @@ socket.on('end-streaming', () => {
    stopStreaming();
 });
 
-*/
+
 //sends image to backend
 function sendImage(){
     base64.encode(path, options, function (err, image) {
@@ -80,8 +85,8 @@ function startStreaming() {
 
   app.set('watchingFile', true);
 
-  fs.watchFile(path, function(current, previous) {
+  //fs.watchFile(path, function(current, previous) {
     sendImage();
-  })
+  //})
 
 }

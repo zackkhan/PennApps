@@ -7,7 +7,8 @@ var path = require('path');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-//require("babel-core");
+
+var imageAPI = require('./imageProcessing');
 
 var port = process.env.PORT || 5000;
 
@@ -17,9 +18,11 @@ server.listen(port, () => {
   console.log('App is online on ' + port);
 });
 
-app.get('getPort', (req, res) =>{
-    res.send(JSON.stringify({'port': port});
-    
+app.get('/getPort', (req, res) =>{
+    console.log('port');
+    res.send({
+        'port': port
+    });
 })
 
 app.get('/test', function(request, response) {
@@ -50,6 +53,10 @@ io.on('connection',  (socket) => {
   socket.on('send-image', (image) => {
     //do stuff with image (i.e. apis)
     console.log('image received');
+    imageAPI.getDetections(image).then((detections)=>{
+        imageAPI.analyzeDetections(detections, image)
+        //must somehow result in an alert
+    });
   });
 
   socket.on('disconnect', function () {
