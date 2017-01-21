@@ -10,7 +10,7 @@ let visionClient = vision({
 });
 
 //var images = ['../Image%20Recognition/Objects/trash_can.JPG']
-
+//
 function getDetections(image){
 
     image = new Buffer(image, 'base64');
@@ -52,7 +52,7 @@ function analyzeDetections(detections, image){
                     newState = Object.assign(newState, obj);
                 }
             })
-            
+
         }).then(()=> {resolve(newState)})
     });
 

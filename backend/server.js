@@ -45,12 +45,12 @@ app.post('/sensorData', (req,res) =>{
     //do something with our sensor data
 })
 
-app.get('/whatIsThis', (req,res) => {
+app.get('/whatIsThat', (req,res) => {
     res.send(app.get('firstDetection'));
 });
 
 app.get('/crosswalkStatus', (req,res) => {
-    
+
 
     if(!app.get('crosswalkStatus')){
         res.send('do not cross')
