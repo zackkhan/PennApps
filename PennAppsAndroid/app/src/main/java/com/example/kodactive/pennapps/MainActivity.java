@@ -7,20 +7,45 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.reimaginebanking.api.java.NessieClient;
+import com.reimaginebanking.api.java.NessieException;
+import com.reimaginebanking.api.java.NessieResultsListener;
+import com.reimaginebanking.api.java.models.Customer;
+import com.reimaginebanking.api.java.models.Purchase;
+
+//import com.reimaginebanking.api.java.NessieClient;
+
 public class MainActivity extends Activity {
     private final int SPEECH_RECOGNITION_CODE = 1;
     private TextView txtOutput;
     private ImageButton btnMicrophone;
+    public static NessieClient nessieClient = NessieClient.getInstance();
+    TextToSpeech ttobj;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        nessieClient.setAPIKey("b86dd9297128e1a6a6b8e0821692d691");
         txtOutput = (TextView) findViewById(R.id.txt_output);
         btnMicrophone = (ImageButton) findViewById(R.id.btn_mic);
+
+        ttobj =new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                ttobj.setLanguage(Locale.US);
+            }
+        });
+
+
+
         btnMicrophone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +84,25 @@ public class MainActivity extends Activity {
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     String text = result.get(0);
                     txtOutput.setText(text);
+                    if (text.contains("dollars") || text.contains("dollar"))
+                    {
+nessieClient.getPurchases("5877e7481756fc834d8eace6", new NessieResultsListener() {
+    @Override
+    public void onSuccess(Object o, NessieException e) {
+        ArrayList<Purchase> purchases = (ArrayList<Purchase>) o;
+        String amt = purchases.get(purchases.size()-1).toString();
+       String amtString = amt.substring(amt.indexOf("amount"));
+        String finalAmtString = amtString.substring(amtString.indexOf('=')+1, amtString.indexOf(','));
+        System.out.println("LOOK HERE HAHAHAHAAHAHAH");
+        double amount = Double.parseDouble(finalAmtString);
+        System.out.println(amount);
+
+        ttobj.speak("Your most recent transaction was" + amount + "dollars", TextToSpeech.QUEUE_FLUSH, null );
+
+
+    }
+});
+                    }
                 }
                 break;
             }
