@@ -35,19 +35,51 @@ function getDetections(image){
 }
 
 function analyzeDetections(detections, image){
-    //takes an array
+    //takes an array, returns object
 
-    image = new Buffer(image, 'base64')
+    var actions = [];
+    var newState = {};
 
-    detections..forEach( (value) => {
-       if(value == 'pedestrian crosswalk'){
-           crosswalk.walkOrNoWalk(image);
-       }
+    return new Promise( (resolve, reject) => {
+        detections.forEach((value)=>{
+            actions.push(routeImage(value, image))
+        })
+
+
+        Promise.all(actions).then((result)=>{
+            result.forEach((obj) => {
+                if(obj != 0){
+                    newState = Object.assign(newState, obj);
+                }
+            })
+            
+        }).then(()=> {resolve(newState)})
     });
+
+
+
+}
+
+function routeImage(detection, image){
+    //determines what should happen to image, promise
+    return new Promise( (resolve, reject) => {
+        if(detection == 'pedestrian crossing'){
+            //console.log('routeImage');
+            resolve(crosswalk.walkOrNoWalk(image))
+        }
+
+        else {
+            resolve(0)
+        }
+
+
+    });
+
 
 }
 
 module.exports = {
-    'getDetections':getDetections
+    'getDetections':getDetections,
+    'analyzeDetections': analyzeDetections
 
 }

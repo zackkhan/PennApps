@@ -13,6 +13,7 @@ var imageAPI = require('./imageProcessing');
 var port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
+app.set('crosswalkStatus', true); //true means okay to cross
 
 server.listen(port, () => {
   console.log('App is online on ' + port);
@@ -44,19 +45,41 @@ app.post('/sensorData', (req,res) =>{
     //do something with our sensor data
 })
 
+app.get('/whatIsThis', (req,res) => {
+    res.send(app.get('firstDetection'));
+});
+
+app.get('/crosswalkStatus', (req,res) => {
+    
+
+    if(!app.get('crosswalkStatus')){
+        res.send('do not cross')
+    } else {
+        res.send('cross')
+    }
+
+})
+
 //io with images
 
-io.on('connection',  (socket) => {
+io.on('connection', (socket) => {
   //io.emit('this', { will: 'be received by everyone'});
 
 
   socket.on('send-image', (image) => {
     //do stuff with image (i.e. apis)
     console.log('image received');
-    imageAPI.getDetections(image).then((detections)=>{
-        imageAPI.analyzeDetections(detections, image)
+    var status = {};
+
+    imageAPI.getDetections(image).then( (detections) => {
+        app.set('firstDetection', detections[0]);
+
+        imageAPI.analyzeDetections(detections, image).then( (status) => {
+            ///console.log(status.crosswalkStatus)
+            app.set('crosswalkStatus', status.crosswalkStatus)
+        })
         //must somehow result in an alert
-    });
+    })
   });
 
   socket.on('disconnect', function () {
