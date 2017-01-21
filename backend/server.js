@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 io.on('connection',  (socket) => {
   //io.emit('this', { will: 'be received by everyone'});
