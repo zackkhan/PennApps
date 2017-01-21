@@ -4,8 +4,10 @@ var request = require('request');
 var bodyParser = require("body-parser");
 var io = require('socket.io-client');
 //const url = 'http://penn-apps.herokuapp.com'
-const url = 'http://localhost:5000'
+//const url = 'http://localhost:5000'
+const url = 'https://penn-apps.herokuapp.com';
 //var socket = io('penn-apps.herokuapp.com:51356');
+//var socket = io(url);
 var socket = io(url);
 
 //file stuff

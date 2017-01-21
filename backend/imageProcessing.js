@@ -48,9 +48,9 @@ function analyzeDetections(detections, image){
 
         Promise.all(actions).then((result)=>{
             result.forEach((obj) => {
-                if(obj != 0){
+                if(obj != 0)
                     newState = Object.assign(newState, obj);
-                }
+
             })
 
         }).then(()=> {resolve(newState)})
@@ -63,20 +63,21 @@ function analyzeDetections(detections, image){
 function routeImage(detection, image){
     //determines what should happen to image, promise
     return new Promise( (resolve, reject) => {
-        if(detection == 'pedestrian crossing'){
+        if(detection == 'pedestrian crossing')
             //console.log('routeImage');
-            resolve(crosswalk.walkOrNoWalk(image))
-        }
+            resolve(crosswalk.walkOrNoWalk(image));
 
-        else {
-            resolve(0)
-        }
+
+        else
+            resolve(0);
+
 
 
     });
 
 
 }
+
 
 module.exports = {
     'getDetections':getDetections,

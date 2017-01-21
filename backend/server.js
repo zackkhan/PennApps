@@ -8,6 +8,7 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
+
 var imageAPI = require('./imageProcessing');
 
 var port = process.env.PORT || 5000;
