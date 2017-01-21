@@ -30,6 +30,7 @@ import com.reimaginebanking.api.java.NessieClient;
 import com.reimaginebanking.api.java.NessieException;
 import com.reimaginebanking.api.java.NessieResultsListener;
 import com.reimaginebanking.api.java.models.Customer;
+import com.reimaginebanking.api.java.models.Merchant;
 import com.reimaginebanking.api.java.models.Purchase;
 
 
@@ -38,6 +39,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import retrofit.client.Response;
 
@@ -64,9 +67,13 @@ public class MainActivity extends Activity {
                 new com.android.volley.Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        System.out.println("RESPONSEHERE");
-                        System.out.println(response);
 
+                        if (response.equals("crosswalk")) {
+                            System.out.println("RESPONSEHERE");
+                            System.out.println(response);
+                            ttobj.speak("ALERT! YOU ARE WALKING INTO A CROSSWALK!!!", TextToSpeech.QUEUE_FLUSH, null);
+
+                        }
                         // Display the first 500 characters of the response string.
                         // mTextView.setText("Response is: "+ response.substring(0,500));
                     }
@@ -80,42 +87,99 @@ public class MainActivity extends Activity {
         queue.add(stringRequest);
     }
 
-
-    public void whatIsThat() {
-        // Instantiate the RequestQueue.
-        com.android.volley.RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://penn-apps.herokuapp.com/whatisthat";
+    public void whoIsThat(String text) {
+        if (text.contains("who is that")) {
+            // Instantiate the RequestQueue.
+            com.android.volley.RequestQueue queue = Volley.newRequestQueue(this);
+            String url = "https://penn-apps.herokuapp.com/whoIsThat";
 
 // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new com.android.volley.Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        System.out.println("RESPONSEHERE");
-                        System.out.println(response);
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new com.android.volley.Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            System.out.println("RESPONSEHERE");
+                            System.out.println(response);
+                            if (response.equals("stranger"))
+                            ttobj.speak("That is a stranger, you are not friends with this person on Facebook", TextToSpeech.QUEUE_FLUSH, null);
+                            else
+                                ttobj.speak("That is your Facebook friend" + response + "Go say Hi!", TextToSpeech.QUEUE_FLUSH, null);
 
-                        // Display the first 500 characters of the response string.
-                        // mTextView.setText("Response is: "+ response.substring(0,500));
-                    }
-                }, new com.android.volley.Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println("That didn't work!");
-            }
-        });
+                            // Display the first 500 characters of the response string.
+                            // mTextView.setText("Response is: "+ response.substring(0,500));
+                        }
+                    }, new com.android.volley.Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    System.out.println("That didn't work!");
+                }
+            });
 // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+            queue.add(stringRequest);
+        }
+    }
+
+
+
+    public void whatIsThat(String text) {
+        if (text.contains("what is that")) {
+            // Instantiate the RequestQueue.
+            com.android.volley.RequestQueue queue = Volley.newRequestQueue(this);
+            String url = "https://penn-apps.herokuapp.com/whatIsThat";
+
+// Request a string response from the provided URL.
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new com.android.volley.Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            System.out.println("RESPONSEHERE");
+                            System.out.println(response);
+                            ttobj.speak("That is a " + response, TextToSpeech.QUEUE_FLUSH, null);
+                            // Display the first 500 characters of the response string.
+                            // mTextView.setText("Response is: "+ response.substring(0,500));
+                        }
+                    }, new com.android.volley.Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    System.out.println("That didn't work!");
+                }
+            });
+// Add the request to the RequestQueue.
+            queue.add(stringRequest);
+        }
     }
 
     public void nessieIntegration(String text, String x)
     {
-        if (text.contains("dollars") || text.contains("dollar") || text.contains("$")) {
+        if (text.contains("Nessie") || text.contains("nessie") || text.contains("$")) {
             for (int i = 0; i < text.length(); i++) {
                 if (Character.isDigit(text.charAt(i))) {
                     x += text.charAt(i);
                 }
+
             }
             final int userAmount = Integer.parseInt(x);
+
+
+
+
+            nessieClient.getMerchants(new NessieResultsListener() {
+                @Override
+                public void onSuccess(Object o, NessieException e) {
+                    ArrayList<Merchant> merchants = (ArrayList<Merchant>) o;
+                    ArrayList<String> merchantNameList = new ArrayList<String>();
+                    System.out.println("printing merchants");
+                    System.out.println(merchants);
+
+                  /*  for (Merchant m: merchants)
+                    {
+                       merchantNameList.add(m.getName());
+                    }
+                    System.out.println(merchantNameList);
+
+*/
+                }
+            });
             nessieClient.getPurchases("5877e7481756fc834d8eace6", new NessieResultsListener() {
                 @Override
                 public void onSuccess(Object o, NessieException e) {
@@ -123,7 +187,8 @@ public class MainActivity extends Activity {
                     String amt = purchases.get(purchases.size() - 1).toString();
                     String amtString = amt.substring(amt.indexOf("amount"));
                     String finalAmtString = amtString.substring(amtString.indexOf('=') + 1, amtString.indexOf(','));
-                    System.out.println("LOOK HERE HAHAHAHAAHAHAH");
+                    System.out.println("LOOK HERE lol");
+                 //  System.out.println(purchases);
                     double amount = Double.parseDouble(finalAmtString);
                     System.out.println(amount);
                     if ((double) userAmount == amount) {
@@ -161,6 +226,21 @@ public class MainActivity extends Activity {
                 startSpeechToText();
             }
         });
+//fix datarace if its a problem (try synchronizing and put up a lock)
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                   detectCrosswalk();
+                }
+            }
+        }).start();
+    }
 
 
     /**
@@ -197,6 +277,8 @@ public class MainActivity extends Activity {
                     txtOutput.setText(text);
                     String x = "";
                     nessieIntegration(text, x);
+                    whatIsThat(text);
+                    whoIsThat(text);
                 }
                 break;
             }
