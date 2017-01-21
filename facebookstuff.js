@@ -22,11 +22,4 @@ for (i=0; i<z.length; i++)
   imgList.push("http://graph.facebook.com/" + z[i].id + "/picture?type=large");
 }
 console.log(imgList);
-/*
-var imgList = [];
-for (j=0; j<list.length; j++)
-  {
-    imgList.push("http://graph.facebook.com/" + list[i]+ "/picture?type=large");
-  }
-console.log(imgList);
-*/
+module.exports = imgList;
