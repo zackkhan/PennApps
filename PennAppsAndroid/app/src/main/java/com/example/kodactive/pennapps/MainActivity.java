@@ -19,6 +19,8 @@ import com.reimaginebanking.api.java.NessieResultsListener;
 import com.reimaginebanking.api.java.models.Customer;
 import com.reimaginebanking.api.java.models.Purchase;
 
+import static java.lang.Integer.parseInt;
+
 //import com.reimaginebanking.api.java.NessieClient;
 
 public class MainActivity extends Activity {
@@ -40,7 +42,7 @@ public class MainActivity extends Activity {
         ttobj =new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                ttobj.setLanguage(Locale.US);
+                ttobj.setLanguage(Locale.UK);
             }
         });
 
@@ -84,8 +86,17 @@ public class MainActivity extends Activity {
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     String text = result.get(0);
                     txtOutput.setText(text);
-                    if (text.contains("dollars") || text.contains("dollar"))
+                    String x = "";
+                    if (text.contains("dollars") || text.contains("dollar") || text.contains("$"))
                     {
+                        for (int i=0; i<text.length(); i++)
+                        {
+                            if (Character.isDigit(text.charAt(i)))
+                            {
+                                x += text.charAt(i);
+                            }
+                        }
+                        final int userAmount = Integer.parseInt(x);
 nessieClient.getPurchases("5877e7481756fc834d8eace6", new NessieResultsListener() {
     @Override
     public void onSuccess(Object o, NessieException e) {
@@ -96,8 +107,12 @@ nessieClient.getPurchases("5877e7481756fc834d8eace6", new NessieResultsListener(
         System.out.println("LOOK HERE HAHAHAHAAHAHAH");
         double amount = Double.parseDouble(finalAmtString);
         System.out.println(amount);
+if ((double) userAmount == amount)
+{ ttobj.speak("That was a valid transaction. Your most recent transaction was" + amount + "dollars", TextToSpeech.QUEUE_FLUSH, null );}
+        else  {
+    ttobj.speak("That transaction was invalid. You stated the amount was" + userAmount + "but " + amount + "was removed from your account",  TextToSpeech.QUEUE_FLUSH, null);
+        }
 
-        ttobj.speak("Your most recent transaction was" + amount + "dollars", TextToSpeech.QUEUE_FLUSH, null );
 
 
     }
