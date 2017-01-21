@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    useLibrary 'org.apache.http.legacy'
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
@@ -28,4 +29,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile files('C:/Users/zackk/Documents/Programming/PennApps/PennApps/PennAppsAndroid/libs/nessie-android-wrapper-1.0.jar')
     compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile 'com.android.volley:volley:1.0.0'
 }
