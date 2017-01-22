@@ -13,10 +13,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Network;
 import android.net.Uri;
-import android.net.http.RequestQueue;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.Voice;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -33,15 +33,6 @@ import com.reimaginebanking.api.java.NessieResultsListener;
 import com.reimaginebanking.api.java.models.Customer;
 import com.reimaginebanking.api.java.models.Merchant;
 import com.reimaginebanking.api.java.models.Purchase;
-
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import retrofit.client.Response;
 
@@ -60,7 +51,7 @@ public class MainActivity extends Activity {
 
     public void yesorno(String text) {
         if (text.equals("yes")) {
-            ttobj.speak("good!", TextToSpeech.QUEUE_FLUSH, null);
+            ttobj.speak("Great!", TextToSpeech.QUEUE_FLUSH, null);
 
         } else if (text.equals("no")) {
             ttobj.speak("Dialing capital one now", TextToSpeech.QUEUE_FLUSH, null);
@@ -118,7 +109,7 @@ public class MainActivity extends Activity {
                             if (response.equals("stranger"))
                                 ttobj.speak("That is a stranger, you are not friends with this person on Facebook", TextToSpeech.QUEUE_FLUSH, null);
                             else
-                                ttobj.speak("That is your Facebook friend" + response + "Go say Hi!", TextToSpeech.QUEUE_FLUSH, null);
+                                ttobj.speak("That is your, Facebook friend, " + response + ". " + " You should go say Hi!", TextToSpeech.QUEUE_FLUSH, null);
 
                             // Display the first 500 characters of the response string.
                             // mTextView.setText("Response is: "+ response.substring(0,500));
@@ -187,7 +178,7 @@ public class MainActivity extends Activity {
 
                 }
                 if (text.contains("AT&T")) {
-                    String d = latestPurchases.get(0).toString();
+                    String d = latestPurchases.get(1).toString();
                     String amtString = d.substring(d.indexOf("amount"));
                     String finalAmtString = amtString.substring(amtString.indexOf('=') + 1, amtString.indexOf(','));
                     Double d1 = Double.parseDouble(finalAmtString);
@@ -195,7 +186,7 @@ public class MainActivity extends Activity {
                     startSpeechToText();
                 }
                 if (text.contains("Dollar Tree")) {
-                    String d = latestPurchases.get(3).toString();
+                    String d = latestPurchases.get(4).toString();
                     String amtString = d.substring(d.indexOf("amount"));
                     String finalAmtString = amtString.substring(amtString.indexOf('=') + 1, amtString.indexOf(','));
                     Double d1 = Double.parseDouble(finalAmtString);
@@ -210,32 +201,9 @@ public class MainActivity extends Activity {
                     ttobj.speak("Your recent transaction at Buffalo Wild Wings was" + d1 + "dollars. Is that what you expected?", TextToSpeech.QUEUE_FLUSH, null);
                     startSpeechToText();
                 }
-
-
-
-
-
-                   /*
-                    String amt = purchases.get(purchases.size() - 1).toString();
-                    String amtString = amt.substring(amt.indexOf("amount"));
-                    String finalAmtString = amtString.substring(amtString.indexOf('=') + 1, amtString.indexOf(','));
-                    System.out.println("LOOK HERE lol");
-                    */
-                //  System.out.println(purchases);
-                //  double amount = Double.parseDouble(finalAmtString);
-                //System.out.println(amount);
-                //if ((double) userAmount == amount) {
-                //  ttobj.speak("That was a valid transaction. Your most recent transaction was" + amount + "dollars", TextToSpeech.QUEUE_FLUSH, null);
-                //} else {
-                //  ttobj.speak("That transaction was invalid. You stated the amount was" + userAmount + "but " + amount + "was removed from your account", TextToSpeech.QUEUE_FLUSH, null);
-                //}
-
-
             }
         });
     }
-    //}
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -249,6 +217,8 @@ public class MainActivity extends Activity {
             @Override
             public void onInit(int status) {
                 ttobj.setLanguage(Locale.UK);
+                ttobj.setPitch(1.0f);
+                ttobj.setSpeechRate(.95f);
             }
         });
 
@@ -264,7 +234,7 @@ public class MainActivity extends Activity {
             public void run() {
                 while (true) {
                     try {
-                        Thread.sleep(10000);
+                        Thread.sleep(28000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -318,74 +288,4 @@ public class MainActivity extends Activity {
         }
     }
 }
-/*
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.media.MediaRecorder;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 
-public class MainActivity extends AppCompatActivity {
-private String TAG = "bluetoothStuff";
-
-    private BroadcastReceiver mBluetoothScoReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int state = intent.getIntExtra(AudioManager.EXTRA_SCO_AUDIO_STATE, -1);
-
-            if (state == AudioManager.SCO_AUDIO_STATE_CONNECTED) {
-                Log.d(TAG, "BLUETOOTHWORKING1");
-
-               MediaRecorder recorder = new MediaRecorder();
-                recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-                // Start recording audio
-            }
-        }
-    };
-
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED);
-        Intent intent = registerReceiver(mBluetoothScoReceiver, intentFilter);
-        if (intent == null) {
-            Log.e(TAG, "Failed to register bluetooth sco receiver...");
-            return;
-        }
-
-        int state = intent.getIntExtra(AudioManager.EXTRA_SCO_AUDIO_STATE, -1);
-        if (state == AudioManager.SCO_AUDIO_STATE_CONNECTED) {
-            // Start recording
-            Log.d(TAG, "BLUETOOTHWORKING2");
-
-        }
-
-        // Ensure the SCO audio connection stays active in case the
-        // current initiator stops it.
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        audioManager.startBluetoothSco();
-    }
-
-
-
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-    }
-}
-
-*/
