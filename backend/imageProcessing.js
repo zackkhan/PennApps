@@ -101,6 +101,7 @@ function getPersonName(image){
 }
 /*
 function enroll(){
+//
     console.log('enroll');
     var images = [ 'http://graph.facebook.com/10203932289243476/picture?type=large',
   'http://graph.facebook.com/1795540795/picture?type=large',
