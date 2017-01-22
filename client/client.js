@@ -20,7 +20,8 @@ var proc;
 
 app.use(bodyParser.json());
 
-var path = __dirname + './images/image.jpg';
+var path = __dirname + '/images/image.jpg';
+var sensorDataJson = __dirname + "/data.json";
 options = {string: true, local: true};
 
 
@@ -56,12 +57,25 @@ socket.on('end-streaming', () => {
 
 //sends image to backend
 function sendImage(){
+    
     base64.encode(path, options, function (err, image) {
         if (err) {console.log(err); }
-
+        console.log('Sent!')
        socket.emit('send-image', image);
 
     });
+}
+
+function sendSensorData(){
+    //read json file
+
+    fs.readFile(sensorDataJson, 'utf8', function (err, data) {
+       if (err) throw err;
+
+       console.log("sent sensor data");
+       socket.emit('send-sensor-data', JSON.parse(data));
+    });
+
 }
 
 
@@ -70,6 +84,7 @@ function stopStreaming() {
     app.set('watchingFile', false);
     if (proc) proc.kill();
     fs.unwatchFile(path);
+    fs.unwatchFile(sensorData);
 
 }
 
@@ -77,6 +92,7 @@ function startStreaming() {
 
   if (app.get('watchingFile')) {
     sendImage();
+    sendSensorData();
     return;
   }
   /*
@@ -84,15 +100,19 @@ function startStreaming() {
   proc = spawn('raspistill', args);
   */
 
-  var args = ["camera-prod.py"];
-  proc = spawn('python', args);
+  //var args = ["camera-prod.py"];
+  //proc = spawn('python', args);
 
   console.log('Watching for changes...');
 
   app.set('watchingFile', true);
 
-  //fs.watchFile(path, function(current, previous) {
-    sendImage();
-  //})
+  fs.watchFile(path, function(current, previous) {
+      sendImage();
+  })
+
+  fs.watchFile(sensorDataJson, function(current, previous) {
+      sendSensorData();
+  })
 
 }

@@ -23,7 +23,7 @@ function walkOrNoWalk(image){
       if (err){
           console.log(err);
       } else {
-          //console.log(JSON.stringify(res, null, 2));
+          console.log(JSON.stringify(res, null, 2));
           if(res.images[0].classifiers[0].classes[0].class == 'go')
            return {'crosswalkStatus': true};
           else
