@@ -2,7 +2,7 @@ var fbgraph = require("./fbgraph.js");
 var https = require('https');
 var http = require('http');
 
-fbgraph.getFbData('EAACEdEose0cBAAUgYrSiRIveVpjGJaRukqwXm1yJ7czjFJ9W7qt2z7kKo3EaCQ8Sc6QH815F8xBvU76pKws6alsmuIkf0ZAtmk24slGzBftEvi5ZANANRlYOZAJG4TUFwIJKZBWI8mSV50GCZBiOwTrLzjO58hcRfYdO09I4evpRHeq8gkvhXBQizwd7DArQZD',
+fbgraph.getFbData('EAACEdEose0cBAK0uTAp1OFnYjPZCKUpFocviRLY0Ibmqz3fRtCBd7yodlymC28bbWq7i8y4nGZCY4Wq2QDUURdKkwDOZAXjSM7tvD88GaTMoG04vYG7NZC45LHs01uXKZBYotTYzGq9saSL9RkwUmQzNXB7dcbhZAojw5I4i1zGIOZC7EWpyTySLyWFuNQqVx0ZD',
  '/me/friends', function(data){
     console.log(data);
 
@@ -12,10 +12,11 @@ fbgraph.getFbData('EAACEdEose0cBAAUgYrSiRIveVpjGJaRukqwXm1yJ7czjFJ9W7qt2z7kKo3Ea
   //  server.listen(80);
 });
 
+var z = [{"name":"Danny Flax","id":"10203932289243476"},{"name":"Michael Anderjaska","id":"10207802598643904"},{"name":"Sashank Thupukari","id":"1795540795"},
+{"name":"Ramsey Khadder","id":"100000000761263"},{"name":"Vineet Shah","id":"972929086085226"},{"name":"Travis Ho","id":"1329153543809773"},{"name":"Tamer Bader","id":"785445504922443"}]
 
 //https://graph.facebook.com/me/friends?access_token=[oauth_to‌​ken]&fields=name,id,‌​picture.type(large)
-var z = [{"name":"Danny Flax","id":"10203932289243476"},{"name":"Sashank Thupukari","id":"1795540795"},{"name":
-"Ramsey Khadder","id":"100000000761263"},{"name":"Vineet Shah","id":"972929086085226"}];
+
 var imgList = [];
 for (i=0; i<z.length; i++)
 {

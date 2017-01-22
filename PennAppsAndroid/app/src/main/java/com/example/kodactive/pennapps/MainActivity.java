@@ -12,6 +12,7 @@ import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Network;
+import android.net.Uri;
 import android.net.http.RequestQueue;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -57,6 +58,20 @@ public class MainActivity extends Activity {
     URL url;
     HttpURLConnection urlConnection = null;
 
+    public void yesorno(String text) {
+        if (text.equals("yes")) {
+            ttobj.speak("good!", TextToSpeech.QUEUE_FLUSH, null);
+
+        } else if (text.equals("no")) {
+            ttobj.speak("Dialing capital one now", TextToSpeech.QUEUE_FLUSH, null);
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:1(877)383-4802"));
+            startActivity(intent);
+        } else {
+            System.out.println("other");
+        }
+    }
+
     public void detectCrosswalk() {
         // Instantiate the RequestQueue.
         com.android.volley.RequestQueue queue = Volley.newRequestQueue(this);
@@ -101,7 +116,7 @@ public class MainActivity extends Activity {
                             System.out.println("RESPONSEHERE");
                             System.out.println(response);
                             if (response.equals("stranger"))
-                            ttobj.speak("That is a stranger, you are not friends with this person on Facebook", TextToSpeech.QUEUE_FLUSH, null);
+                                ttobj.speak("That is a stranger, you are not friends with this person on Facebook", TextToSpeech.QUEUE_FLUSH, null);
                             else
                                 ttobj.speak("That is your Facebook friend" + response + "Go say Hi!", TextToSpeech.QUEUE_FLUSH, null);
 
@@ -118,7 +133,6 @@ public class MainActivity extends Activity {
             queue.add(stringRequest);
         }
     }
-
 
 
     public void whatIsThat(String text) {
@@ -149,60 +163,78 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void nessieIntegration(String text, String x)
-    {
-        if (text.contains("Nessie") || text.contains("nessie") || text.contains("$")) {
-            for (int i = 0; i < text.length(); i++) {
-                if (Character.isDigit(text.charAt(i))) {
-                    x += text.charAt(i);
+    public void nessieIntegration(final String text) {
+        // if (text.contains("Dunkin") || text.contains("AT&T") || text.contains("Radioshack") || text.contains("Buffalo Wild Wings")) {
+        //  if (text.contains("Nessie") || text.contains ("nessie")){
+        System.out.println("nessierun");
+        nessieClient.getPurchases("5877e7481756fc834d8eace6", new NessieResultsListener() {
+            @Override
+            public void onSuccess(Object o, NessieException e) {
+                ArrayList<Purchase> purchases = (ArrayList<Purchase>) o;
+                ArrayList<Purchase> latestPurchases = new ArrayList<Purchase>();
+                for (int index = purchases.size() - 5; index < purchases.size(); index++) {
+                    latestPurchases.add(purchases.get(index));
                 }
 
-            }
-            final int userAmount = Integer.parseInt(x);
+                if (text.contains("Donuts")) {
+                    System.out.println("nessierun2");
+                    String d = latestPurchases.get(1).toString();
+                    String amtString = d.substring(d.indexOf("amount"));
+                    String finalAmtString = amtString.substring(amtString.indexOf('=') + 1, amtString.indexOf(','));
+                    Double d1 = Double.parseDouble(finalAmtString);
+                    ttobj.speak("Your recent transaction at Dunkin was" + d1 + "dollars. Is that what you expected?", TextToSpeech.QUEUE_FLUSH, null);
+                    startSpeechToText();
 
-
-
-
-            nessieClient.getMerchants(new NessieResultsListener() {
-                @Override
-                public void onSuccess(Object o, NessieException e) {
-                    ArrayList<Merchant> merchants = (ArrayList<Merchant>) o;
-                    ArrayList<String> merchantNameList = new ArrayList<String>();
-                    System.out.println("printing merchants");
-                    System.out.println(merchants);
-
-                  /*  for (Merchant m: merchants)
-                    {
-                       merchantNameList.add(m.getName());
-                    }
-                    System.out.println(merchantNameList);
-
-*/
                 }
-            });
-            nessieClient.getPurchases("5877e7481756fc834d8eace6", new NessieResultsListener() {
-                @Override
-                public void onSuccess(Object o, NessieException e) {
-                    ArrayList<Purchase> purchases = (ArrayList<Purchase>) o;
+                if (text.contains("AT&T")) {
+                    String d = latestPurchases.get(0).toString();
+                    String amtString = d.substring(d.indexOf("amount"));
+                    String finalAmtString = amtString.substring(amtString.indexOf('=') + 1, amtString.indexOf(','));
+                    Double d1 = Double.parseDouble(finalAmtString);
+                    ttobj.speak("Your recent transaction at AT&T was" + d1 + "dollars. Is that what you expected?", TextToSpeech.QUEUE_FLUSH, null);
+                    startSpeechToText();
+                }
+                if (text.contains("Dollar Tree")) {
+                    String d = latestPurchases.get(3).toString();
+                    String amtString = d.substring(d.indexOf("amount"));
+                    String finalAmtString = amtString.substring(amtString.indexOf('=') + 1, amtString.indexOf(','));
+                    Double d1 = Double.parseDouble(finalAmtString);
+                    ttobj.speak("Your recent transaction at Dollar Tree was" + d1 + "dollars. Is that what you expected?", TextToSpeech.QUEUE_FLUSH, null);
+                    startSpeechToText();
+                }
+                if (text.contains("Buffalo Wild Wing")) {
+                    String d = latestPurchases.get(2).toString();
+                    String amtString = d.substring(d.indexOf("amount"));
+                    String finalAmtString = amtString.substring(amtString.indexOf('=') + 1, amtString.indexOf(','));
+                    Double d1 = Double.parseDouble(finalAmtString);
+                    ttobj.speak("Your recent transaction at Buffalo Wild Wings was" + d1 + "dollars. Is that what you expected?", TextToSpeech.QUEUE_FLUSH, null);
+                    startSpeechToText();
+                }
+
+
+
+
+
+                   /*
                     String amt = purchases.get(purchases.size() - 1).toString();
                     String amtString = amt.substring(amt.indexOf("amount"));
                     String finalAmtString = amtString.substring(amtString.indexOf('=') + 1, amtString.indexOf(','));
                     System.out.println("LOOK HERE lol");
-                 //  System.out.println(purchases);
-                    double amount = Double.parseDouble(finalAmtString);
-                    System.out.println(amount);
-                    if ((double) userAmount == amount) {
-                        ttobj.speak("That was a valid transaction. Your most recent transaction was" + amount + "dollars", TextToSpeech.QUEUE_FLUSH, null);
-                    } else {
-                        ttobj.speak("That transaction was invalid. You stated the amount was" + userAmount + "but " + amount + "was removed from your account", TextToSpeech.QUEUE_FLUSH, null);
-                    }
+                    */
+                //  System.out.println(purchases);
+                //  double amount = Double.parseDouble(finalAmtString);
+                //System.out.println(amount);
+                //if ((double) userAmount == amount) {
+                //  ttobj.speak("That was a valid transaction. Your most recent transaction was" + amount + "dollars", TextToSpeech.QUEUE_FLUSH, null);
+                //} else {
+                //  ttobj.speak("That transaction was invalid. You stated the amount was" + userAmount + "but " + amount + "was removed from your account", TextToSpeech.QUEUE_FLUSH, null);
+                //}
 
 
-                }
-            });
-        }
+            }
+        });
     }
-
+    //}
 
 
     @Override
@@ -230,13 +262,13 @@ public class MainActivity extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while(true){
+                while (true) {
                     try {
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                   detectCrosswalk();
+                    detectCrosswalk();
                 }
             }
         }).start();
@@ -276,9 +308,10 @@ public class MainActivity extends Activity {
                     String text = result.get(0);
                     txtOutput.setText(text);
                     String x = "";
-                    nessieIntegration(text, x);
+                    nessieIntegration(text);
                     whatIsThat(text);
                     whoIsThat(text);
+                    yesorno(text);
                 }
                 break;
             }

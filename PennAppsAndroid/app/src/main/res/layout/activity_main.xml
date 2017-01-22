@@ -2,40 +2,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="#EBE8E3"
     android:orientation="vertical" >
-    <TextView
-        android:id="@+id/txt_output"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
-        android:textColor="#ffffff"
-        android:textSize="26dp"
-        android:textStyle="normal" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="60dp"
         android:gravity="center"
-        android:orientation="vertical" >
-        <ImageButton
-            android:id="@+id/btn_mic"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@null"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher" />
+        android:orientation="vertical"
+        android:layout_marginTop="51dp"
+        android:layout_below="@+id/txt_output"
+        android:layout_centerHorizontal="true">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Speech to text using Google API"
-            android:textColor="#ffffff"
+            android:textColor="#666666"
             android:textSize="15dp"
             android:textStyle="normal" />
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btn_mic"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/eyegif"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="88dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/txt_output"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:textColor="#666666"
+        android:textStyle="normal"
+        android:fontFamily="sans-serif"
+        android:text="Output Text"
+        android:textSize="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
