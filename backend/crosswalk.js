@@ -20,14 +20,16 @@ function walkOrNoWalk(image){
     };
 
     visual_recognition.classify(params, function(err, res) {
-      if (err)
-        console.log(err);
-      else
-        console.log(JSON.stringify(res, null, 2));
-        if(res.images[0].classifiers[0].classes[0].class == 'go')
-         return {'crosswalkStatus': true};
-        else
-        return {'crosswalkStatus': false};
+      if (err){
+          console.log(err);
+      } else {
+          //console.log(JSON.stringify(res, null, 2));
+          if(res.images[0].classifiers[0].classes[0].class == 'go')
+           return {'crosswalkStatus': true};
+          else
+          return {'crosswalkStatus': false};
+      }
+
     });
 
      //true means crossing is ok

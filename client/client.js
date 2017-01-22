@@ -20,7 +20,7 @@ var proc;
 
 app.use(bodyParser.json());
 
-var path = __dirname + '/image.jpg';
+var path = __dirname + './images/image.jpg';
 options = {string: true, local: true};
 
 
@@ -83,6 +83,10 @@ function startStreaming() {
   var args = ["-w", "640", "-h", "480", "-o", "./stream/image_stream.jpg", "-t", "999999999", "-tl", "100"];
   proc = spawn('raspistill', args);
   */
+
+  var args = ["camera-prod.py"];
+  proc = spawn('python', args);
+
   console.log('Watching for changes...');
 
   app.set('watchingFile', true);
