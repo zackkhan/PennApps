@@ -76,8 +76,6 @@ function routeImage(detection, image){
         else
             resolve(0);
 
-
-
     });
 
 
@@ -92,12 +90,13 @@ function getPersonName(image){
 
     };
 
-    kairosClient.recognize(params).then((result) => {
-        console.log(JSON.stringify(result));
-        return req.body.images[0].candidates[0].subject_id;
+    return new Promise( (resolve, reject) => {
+        kairosClient.recognize(params).then((result) => {
+            console.log(JSON.stringify(result));
+            resolve(result.body.images[0].candidates[0].subject_id);
 
+        });
     });
-
 }
 /*
 function enroll(){

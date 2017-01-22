@@ -7,5 +7,5 @@ function respondToSensordata(data){
 
 
 module.exports = {
-    respondToSensordata: 'respondToSensordata';
+    respondToSensordata: 'respondToSensordata'
 }
