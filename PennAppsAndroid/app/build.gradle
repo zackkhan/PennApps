@@ -26,6 +26,7 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile "com.andkulikov:transitionseverywhere:1.7.0"
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.4'
     testCompile 'junit:junit:4.12'
     compile files('C:/Users/zackk/Documents/Programming/PennApps/PennApps/PennAppsAndroid/libs/nessie-android-wrapper-1.0.jar')
     compile 'com.squareup.retrofit:retrofit:1.9.0'

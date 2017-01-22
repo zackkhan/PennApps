@@ -1,5 +1,6 @@
 package com.example.kodactive.pennapps;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -14,12 +15,16 @@ import android.content.Intent;
 import android.net.Network;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,14 +38,22 @@ import com.reimaginebanking.api.java.NessieResultsListener;
 import com.reimaginebanking.api.java.models.Customer;
 import com.reimaginebanking.api.java.models.Merchant;
 import com.reimaginebanking.api.java.models.Purchase;
+import com.transitionseverywhere.Fade;
+import com.transitionseverywhere.TransitionManager;
 
+import pl.droidsonroids.gif.GifDrawable;
+import pl.droidsonroids.gif.GifImageButton;
+import pl.droidsonroids.gif.GifImageView;
 import retrofit.client.Response;
 
 import static java.lang.Integer.parseInt;
 
 //import com.reimaginebanking.api.java.NessieClient;
 
+
 public class MainActivity extends Activity {
+
+    private GifImageView mGigImageView;
     private final int SPEECH_RECOGNITION_CODE = 1;
     private TextView txtOutput;
     private ImageButton btnMicrophone;
@@ -48,6 +61,30 @@ public class MainActivity extends Activity {
     TextToSpeech ttobj;
     URL url;
     HttpURLConnection urlConnection = null;
+    ViewGroup transitionsContainer;
+    TextView textView;
+    ImageView loadingImage;
+
+    public void startStream(){
+        com.android.volley.RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://penn-apps.herokuapp.com/startStream";
+
+// Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new com.android.volley.Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                    }
+                }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("That didn't work!");
+            }
+        });
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
 
     public void yesorno(String text) {
         if (text.equals("yes")) {
@@ -73,7 +110,6 @@ public class MainActivity extends Activity {
                 new com.android.volley.Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
                         if (response.equals("crosswalk")) {
                             System.out.println("RESPONSEHERE");
                             System.out.println(response);
@@ -205,13 +241,86 @@ public class MainActivity extends Activity {
         });
     }
 
+    public void countMoney(String text) {
+        if (text.contains("count")) {
+            // Instantiate the RequestQueue.
+            com.android.volley.RequestQueue queue = Volley.newRequestQueue(this);
+            String url = "https://penn-apps.herokuapp.com/countMoney";
+
+// Request a string response from the provided URL.
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new com.android.volley.Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            System.out.println("RESPONSEHERE");
+                            System.out.println(response);
+                            ttobj.speak("That is " + response + "dollars", TextToSpeech.QUEUE_FLUSH, null);
+                            // Display the first 500 characters of the response string.
+                            // mTextView.setText("Response is: "+ response.substring(0,500));
+                        }
+                    }, new com.android.volley.Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    System.out.println("That didn't work!");
+                }
+            });
+// Add the request to the RequestQueue.
+            queue.add(stringRequest);
+        }
+    }
+
+
+    public void beginWelcomeAnimation() {
+        new CountDownTimer(500, 500) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+
+            @Override
+            public void onFinish() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadingImage.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.rotation_loop));
+
+                        TransitionManager.beginDelayedTransition(transitionsContainer, new Fade().setDuration(2000));
+                        textView.setVisibility(View.VISIBLE);
+                    }
+                });
+                new CountDownTimer(2500, 2500) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                    }
+
+                    @Override
+                    public void onFinish() {
+
+                    }
+                }.start();
+            }
+        }.start();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         nessieClient.setAPIKey("b86dd9297128e1a6a6b8e0821692d691");
+        startStream();
         txtOutput = (TextView) findViewById(R.id.txt_output);
-        btnMicrophone = (ImageButton) findViewById(R.id.btn_mic);
+        btnMicrophone = (GifImageButton) findViewById(R.id.btn_mic);
+        GifDrawable gifDrawable = null;
+        try {
+            gifDrawable = new GifDrawable(getResources(), R.mipmap.eyegif);
+            gifDrawable.setLoopCount(1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        btnMicrophone.setImageDrawable(gifDrawable);
+
+
+
+
 
         ttobj = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -234,7 +343,7 @@ public class MainActivity extends Activity {
             public void run() {
                 while (true) {
                     try {
-                        Thread.sleep(28000);
+                        Thread.sleep(1000000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -242,6 +351,7 @@ public class MainActivity extends Activity {
                 }
             }
         }).start();
+
     }
 
 
@@ -281,6 +391,7 @@ public class MainActivity extends Activity {
                     nessieIntegration(text);
                     whatIsThat(text);
                     whoIsThat(text);
+                    countMoney(text);
                     yesorno(text);
                 }
                 break;
